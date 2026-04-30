@@ -164,7 +164,8 @@ async function startServer() {
 
   const port = process.env.PORT || 3000;
 
-  server.listen(port, () => {
+  // يجب الاستماع على المضيف 0.0.0.0 ليعمل على Railway
+  server.listen(Number(port), "0.0.0.0", () => {
     logger.info("server started", {
       port,
       env: process.env.NODE_ENV ?? "development",
