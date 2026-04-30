@@ -32,6 +32,10 @@ if (!API_KEY) {
 const genAI = new GoogleGenerativeAI(API_KEY);
 
 async function startServer() {
+  // تهيئة قاعدة البيانات أولاً
+  const { initDB } = await import('./db/database.js');
+  await initDB();
+
   const app = express();
   const server = createServer(app);
 
@@ -83,10 +87,10 @@ async function startServer() {
 
     try {
       // 1. جلب المحادثة والذاكرة (آخر 10 رسائل)
-      const conversation = db.prepare('SELECT * FROM conversations WHERE id = ? AND user_id = ?').get(conversationId, userId) as any;
+      const conversation = await db.get('SELECT * FROM conversations WHERE id = ? AND user_id = ?', conversationId, userId) as any;
       if (!conversation) return res.status(404).json({ error: "Conversation not found" });
 
-      const dbMessages = db.prepare('SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 10').all(conversationId) as any[];
+      const dbMessages = await db.all('SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 10', conversationId) as any[];
       const history = dbMessages.reverse().map(m => ({
         role: m.role === 'user' ? 'user' : 'model',
         parts: [{ text: m.content }]
@@ -94,8 +98,8 @@ async function startServer() {
 
       // 2. حفظ رسالة المستخدم في قاعدة البيانات
       const userMsgId = uuidv4();
-      db.prepare('INSERT INTO messages (id, conversation_id, role, content, attachments) VALUES (?, ?, ?, ?, ?)')
-        .run(userMsgId, conversationId, 'user', message, JSON.stringify(attachments || []));
+      await db.run('INSERT INTO messages (id, conversation_id, role, content, attachments) VALUES (?, ?, ?, ?, ?)',
+        userMsgId, conversationId, 'user', message, JSON.stringify(attachments || []));
 
       // 3. إعداد نموذج Gemini
       const model = genAI.getGenerativeModel({ 
@@ -129,15 +133,15 @@ async function startServer() {
 
       // 5. حفظ رد الـ AI وخصم الرصيد وتحديث وقت المحادثة
       const aiMsgId = uuidv4();
-      db.prepare('INSERT INTO messages (id, conversation_id, role, content) VALUES (?, ?, ?, ?)')
-        .run(aiMsgId, conversationId, 'assistant', fullResponse);
+      await db.run('INSERT INTO messages (id, conversation_id, role, content) VALUES (?, ?, ?, ?)',
+        aiMsgId, conversationId, 'assistant', fullResponse);
       
-      db.prepare('UPDATE users SET credits = credits - 1 WHERE id = ?').run(userId);
-      db.prepare('UPDATE conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(conversationId);
+      await db.run('UPDATE users SET credits = credits - 1 WHERE id = ?', userId);
+      await db.run('UPDATE conversations SET updated_at = CURRENT_TIMESTAMP WHERE id = ?', conversationId);
       
       // تسجيل الاستخدام
-      db.prepare('INSERT INTO usage_logs (user_id, action, metadata) VALUES (?, ?, ?)')
-        .run(userId, 'chat_sent', JSON.stringify({ conversationId, responseLen: fullResponse.length }));
+      await db.run('INSERT INTO usage_logs (user_id, action, metadata) VALUES (?, ?, ?)',
+        userId, 'chat_sent', JSON.stringify({ conversationId, responseLen: fullResponse.length }));
 
       res.end();
     } catch (error: any) {
