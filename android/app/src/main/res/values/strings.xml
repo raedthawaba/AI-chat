@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AI Chat Pro</string>
+    <string name="title_activity_main">AI Chat Pro</string>
+    <string name="package_name">com.aichatpro.app</string>
+    <string name="custom_url_scheme">com.aichatpro.app</string>
+</resources>
