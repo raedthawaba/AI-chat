@@ -84,7 +84,7 @@ app.post('/api/chat/stream', authenticate, async (req, res) => {
   res.setHeader('Transfer-Encoding', 'chunked');
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
     const chat = model.startChat({ history: [] });
     const result = await chat.sendMessageStream(message);
     

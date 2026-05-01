@@ -95,7 +95,7 @@ app.post('/api/chat', async (req, res) => {
 
     if (!genAI) return res.status(500).json({ message: 'AI Key not configured' });
 
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     const chat = model.startChat({
       history: history.slice(-10).map(m => ({
         role: m.role === 'user' ? 'user' : 'model',
