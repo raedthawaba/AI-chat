@@ -100,8 +100,17 @@ app.post('/api/chat/stream', authenticate, async (req, res) => {
     
     res.end();
   } catch (err) {
-    console.error(err);
-    res.status(500).end();
+    console.error('--- Gemini API Error Details ---');
+    console.error('Error Message:', err.message);
+    console.error('Error Stack:', err.stack);
+    if (err.response) {
+      console.error('Response Data:', JSON.stringify(err.response, null, 2));
+    }
+    res.status(500).json({ 
+      error: 'Gemini API Error', 
+      details: err.message,
+      fullError: JSON.stringify(err, Object.getOwnPropertyNames(err))
+    });
   }
 });
 

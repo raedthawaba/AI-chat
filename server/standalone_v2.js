@@ -114,7 +114,15 @@ app.post('/api/chat', async (req, res) => {
 
     res.json({ content: text });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('--- Gemini API V2 Error Details ---');
+    console.error('Error Message:', error.message);
+    if (error.response) {
+      console.error('Response Data:', JSON.stringify(error.response, null, 2));
+    }
+    res.status(500).json({ 
+      message: error.message,
+      details: 'Check server logs for more info'
+    });
   }
 });
 
