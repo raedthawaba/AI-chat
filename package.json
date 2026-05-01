@@ -5,8 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build && esbuild server/standalone_v2.js --platform=node --packages=external --bundle --format=esm --minify --sourcemap --outdir=dist",
-    "start": "node dist/standalone_v2.js",
+    "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --minify --sourcemap --outdir=dist",
+    "start": "node dist/index.js",
     "preview": "vite preview --host",
     "check": "tsc --noEmit",
     "format": "prettier --write .",
@@ -80,7 +80,7 @@
     "uuid": "^14.0.0",
     "vaul": "^1.1.2",
     "vite-plugin-compression": "^0.5.1",
-    "wouter": "^3.3.5",
+    "wouter": "3.7.1",
     "zod": "^4.1.12",
     "zustand": "^5.0.12"
   },
