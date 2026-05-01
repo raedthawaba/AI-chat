@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import cors from 'cors';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import fs from 'fs';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -27,7 +28,8 @@ const messages = [];
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+const staticPath = fs.existsSync(path.join(__dirname, 'public')) ? path.join(__dirname, 'public') : path.join(__dirname, '../dist/public');
+app.use(express.static(staticPath));
 
 // --- Auth Routes ---
 app.post('/api/auth/register', async (req, res) => {
@@ -104,7 +106,7 @@ app.post('/api/chat/stream', authenticate, async (req, res) => {
 });
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'));
+  res.sendFile(path.join(staticPath, 'index.html'));
 });
 
 server.listen(PORT, '0.0.0.0', () => {
