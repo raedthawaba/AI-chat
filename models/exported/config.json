@@ -1,0 +1,1 @@
+{"name": "arabic_llama_pro_v1", "vocab_size": 8000, "d_model": 128, "n_heads": 4, "n_kv_heads": 2, "num_layers": 4, "dim_feedforward": 512, "max_seq_len": 128, "norm_eps": "1e-5"}
