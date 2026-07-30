@@ -1,49 +1,36 @@
-class AIModel {
-  final String id;
-  final String name;
-  final String description;
-  final String icon;
-  final bool isAvailable;
-  final bool isPremium;
-  final int? maxTokens;
-  final double? temperature;
-  final List<String>? capabilities;
+import 'package:equatable/equatable.dart';
 
-  AIModel({
+class AiModel extends Equatable {
+  const AiModel({
     required this.id,
     required this.name,
-    required this.description,
-    required this.icon,
-    this.isAvailable = true,
-    this.isPremium = false,
-    this.maxTokens,
-    this.temperature,
-    this.capabilities,
+    required this.provider,
+    this.description,
+    this.contextWindow = 0,
   });
 
-  factory AIModel.fromJson(Map<String, dynamic> json) {
-    return AIModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      description: json['description'] as String? ?? '',
-      icon: json['icon'] as String? ?? '🧠',
-      isAvailable: json['isAvailable'] as bool? ?? true,
-      isPremium: json['isPremium'] as bool? ?? false,
-      maxTokens: json['maxTokens'] as int?,
-      temperature: json['temperature'] as double?,
-      capabilities: List<String>.from(json['capabilities'] as List? ?? []),
-    );
-  }
+  factory AiModel.fromJson(Map<String, dynamic> json) => AiModel(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        provider: json['provider'] as String? ?? 'unknown',
+        description: json['description'] as String?,
+        contextWindow: json['context_window'] as int? ?? 0,
+      );
+
+  final String id;
+  final String name;
+  final String provider;
+  final String? description;
+  final int contextWindow;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'name': name,
-    'description': description,
-    'icon': icon,
-    'isAvailable': isAvailable,
-    'isPremium': isPremium,
-    'maxTokens': maxTokens,
-    'temperature': temperature,
-    'capabilities': capabilities,
-  };
+        'id': id,
+        'name': name,
+        'provider': provider,
+        'description': description,
+        'context_window': contextWindow,
+      };
+
+  @override
+  List<Object?> get props => [id, name, provider, description, contextWindow];
 }
